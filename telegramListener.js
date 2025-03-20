@@ -4,7 +4,7 @@ const WebSocket = require("ws");
 const TARGET_PEER_ID = "2320489201";
 const codeRegex = /\b[A-Z]{8}\b|\b[A-Z0-9]{8}\b/g;
 
-const ws = new WebSocket("wss://my-app.up.railway.app");
+const ws = new WebSocket("wss://websocket-telegram-production.up.railway.app");
 
 ws.on("open", () => {
     console.log("✅ Connected to WebSocket server.");
