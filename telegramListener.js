@@ -1,10 +1,12 @@
 const WebSocket = require('ws');
 const express = require('express');
 const cors = require('cors');
+const { Api } = require("telegram");
 const { client } = require('./telegram');
 
-const TARGET_PEER_ID = '2320489201';
-const codeRegex = /\b[A-Z]{8}\b|\b[A-Z0-9]{8}\b/g;
+const TARGET_PEER_ID = '2680159475';
+const codeRegex = /\b[a-zA-Z0-9]{8}\b/g;
+
 
 const app = express();
 app.use(cors({ origin: '*' })); // Promenite za produkciju
