@@ -4,7 +4,7 @@ const cors = require('cors');
 const { Api } = require("telegram");
 const { client } = require('./telegram');
 
-const TARGET_PEER_ID = '2680159475';
+const TARGET_PEER_ID = '1879228463';
 const codeRegex = /\b[a-zA-Z0-9]{8}\b/g;
 
 
