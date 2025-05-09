@@ -5,9 +5,9 @@ const { Api } = require("telegram");
 const { client } = require('./telegram');
 
 // ← PROMENI OVO u peerId koji vidiš u logu kada dobiješ poruku
-const TARGET_PEER_ID = '1879228463';
+// const TARGET_PEER_ID = '1879228463';
 
-// const TARGET_PEER_ID = '2680159475';
+const TARGET_PEER_ID = '2680159475';
 const codeRegex = /\b[a-zA-Z0-9]{8}\b/g;
 
 const app = express();
