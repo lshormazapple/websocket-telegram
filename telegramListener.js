@@ -58,9 +58,9 @@ client.addEventHandler(async (event) => {
     const messagePeerId =
         message.peerId?.channelId?.toString() ||
         message.peerId?.userId?.toString();
-
+        console.log(`📥 Nova poruka sa peerId=${messagePeerId}:`, message.message);
     if (messagePeerId !== TARGET_PEER_ID) return;
-
+    console.log(`📥 Test=${messagePeerId}:`, message.message);
     // Slanje poruke na WebSocket
     try {
         console.log(`Sending message to ${clients.size} clients: ${message.message}`);
