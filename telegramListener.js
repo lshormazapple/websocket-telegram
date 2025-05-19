@@ -4,11 +4,8 @@ const cors = require('cors');
 const { Api } = require("telegram");
 const { client } = require('./telegram');
 
-// ← PROMENI OVO u peerId koji vidiš u logu kada dobiješ poruku
-// const TARGET_PEER_ID = '1879228463';
-
 const TARGET_PEER_ID = '2680159475';
-const codeRegex = /\b[a-zA-Z0-9]{8}\b/g;
+const codeRegex = /^[a-zA-Z0-9]{8}$/;
 
 const app = express();
 app.use(cors({ origin: '*' }));
@@ -39,7 +36,7 @@ wss.on('connection', (ws) => {
     });
 });
 
-// Ping loop da se otkriju mrtvi WebSocket klijenti
+// Ping loop za mrtve WS klijente
 setInterval(() => {
     clients.forEach((ws, clientId) => {
         if (!ws.isAlive) {
@@ -53,7 +50,7 @@ setInterval(() => {
     });
 }, 30000);
 
-// Handler za poruke sa Telegrama
+// Telegram poruke
 client.addEventHandler(async (event) => {
     if (!event.message) return;
 
@@ -64,44 +61,44 @@ client.addEventHandler(async (event) => {
 
     console.log(`📥 Poruka od peerId=${messagePeerId}: ${message.message}`);
 
-    // Logujemo razliku ako peerId ne odgovara TARGET_PEER_ID
     if (messagePeerId !== TARGET_PEER_ID) {
         console.log(`⚠️ Ignorisana poruka. Ne odgovara TARGET_PEER_ID: ${TARGET_PEER_ID}`);
         return;
     }
 
-    // Imamo poruku od željenog peerId-a
+    const messageText = message.message?.trim();
+
+    // Slanje poruke svim WS klijentima
     if (clients.size === 0) {
         console.log('⚠️ Nema WebSocket klijenata povezanih – poruka nije poslata nikome.');
     } else {
-        console.log(`📤 Šaljem poruku "${message.message}" ka ${clients.size} WS klijenata.`);
+        console.log(`📤 Šaljem poruku "${messageText}" ka ${clients.size} WS klijenata.`);
     }
 
     clients.forEach((ws) => {
         if (ws.readyState === WebSocket.OPEN) {
             try {
-                ws.send(JSON.stringify({ type: "message", message: message.message }));
+                ws.send(JSON.stringify({ type: "message", message: messageText }));
             } catch (err) {
                 console.error("❌ WS send greška:", err.message);
             }
         }
     });
 
-    // Parsiranje koda
-    const matches = message.message.match(codeRegex);
-    if (matches && matches.length > 0) {
-        for (const code of matches) {
-            console.log(`📤 Šaljem kod: ${code}`);
-            clients.forEach((ws) => {
-                if (ws.readyState === WebSocket.OPEN) {
-                    try {
-                        ws.send(JSON.stringify({ type: "new_code", code }));
-                    } catch (err) {
-                        console.error("❌ WS send greška kod slanja koda:", err.message);
-                    }
+    // ✅ Slanje samo ako je cela poruka validan kod (8 znakova, bez razmaka)
+    if (messageText && codeRegex.test(messageText)) {
+        console.log(`📤 Validan kod detektovan: ${messageText}`);
+        clients.forEach((ws) => {
+            if (ws.readyState === WebSocket.OPEN) {
+                try {
+                    ws.send(JSON.stringify({ type: "new_code", code: messageText }));
+                } catch (err) {
+                    console.error("❌ WS send greška kod slanja koda:", err.message);
                 }
-            });
-        }
+            }
+        });
+    } else {
+        console.log(`🚫 Poruka nije kod: "${messageText}"`);
     }
 });
 
