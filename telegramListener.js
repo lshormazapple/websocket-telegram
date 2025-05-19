@@ -11,7 +11,6 @@ const app = express();
 app.use(cors({ origin: '*' }));
 const server = require('http').createServer(app);
 const wss = new WebSocket.Server({ server });
-
 const clients = new Map();
 
 wss.on('connection', (ws) => {
